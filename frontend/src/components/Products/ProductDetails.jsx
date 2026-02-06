@@ -43,13 +43,13 @@ const ProductDetails = ({productId}) => {
     };
 
     const handleTryOn = () => {
-        console.log("Try On Clicked");
+        // console.log("Try On Clicked");
         setOpenTryOn(true);
     };
     const handleTryNow = () => {
          if (!selectedImage) return;
         setTryNowLoading(true);
-        console.log("Uploaded Image:", selectedImage);
+        // console.log("Uploaded Image:", selectedImage);
 
         // simulate API call
         setTimeout(() => {
@@ -189,13 +189,13 @@ return (
                             </div>
 
                             <button 
-                                onClick={()=>handleAddToCart()}
+                                onClick={handleAddToCart}
                                 disabled={isButtonDisabled}
                                 className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${isButtonDisabled?" cursor-not-allowed opacity-50":"hover:bg-gray-900"}`}>
                             {isButtonDisabled? "Adding..":" ADD TO CART"}
                             </button>
                             <button 
-                                onClick={()=>handleTryOn()}
+                                onClick={handleTryOn}
                                 disabled={isButtonDisabled}
                                 className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${isButtonDisabled?" cursor-not-allowed opacity-50":"hover:bg-gray-900"}`}>
                             {isButtonDisabled? "Loading..":" TRY ON"}
