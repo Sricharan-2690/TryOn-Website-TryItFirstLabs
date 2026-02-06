@@ -30,7 +30,9 @@ async (userData, { rejectWithValue }) => {
         return response.data
     }
     catch (error){
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -47,7 +49,7 @@ async ({ id, name, email, role }) =>{
             },
         }
     );
-    return response.data;
+    return response.data.user;
 }
 );
 
@@ -88,6 +90,7 @@ const adminSlice = createSlice({
 
             .addCase (updateUser.fulfilled, (state, action) =>{
                 const updatedUser = action.payload;
+                // console.log("Updated User:", updatedUser);
                 const userIndex = state.users.findIndex ((user) => user._id === updatedUser._id);
                 if (userIndex!== -1) {
                     state.users [userIndex] = updatedUser;
@@ -108,7 +111,7 @@ const adminSlice = createSlice({
             })
             .addCase (addUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload.message
+                state.error = action.payload?.message || action.error.message;
             });
     }
 });

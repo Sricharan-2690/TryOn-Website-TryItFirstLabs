@@ -9,13 +9,17 @@ async(_,{ rejectWithValue }) => {
         `${import.meta.env.VITE_BACKEND_URL}/api/orders/my-orders`,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                    Authorization: localStorage.getItem("userToken")
+                    ? `Bearer ${localStorage.getItem("userToken")}`
+                    : undefined,
                 },
             }
         );
         return response.data
     }catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -28,13 +32,17 @@ async (orderId, { rejectWithValue }) => {
         `${import.meta.env.VITE_BACKEND_URL}/api/orders/${orderId}`,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                    Authorization: localStorage.getItem("userToken")
+                    ? `Bearer ${localStorage.getItem("userToken")}`
+                    : undefined,
                 },
             }
         );
         return response.data;
     } catch (error){
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -57,11 +65,12 @@ const orderSlice = createSlice({
         })
         .addCase(fetchUserOrders.fulfilled, (state, action)=>{
             state.loading = false;
+            state.totalOrders = action.payload.length;
             state.orders = action.payload;
         })
         .addCase(fetchUserOrders.rejected, (state, action)=> {
             state.loading = false;
-            statererror = action.payload.message;
+            state.error = action.payload?.message || action.error.message;
         })
         // Fetch order details
         .addCase(fetchOrderDetails.pending, (state) =>{
@@ -74,7 +83,7 @@ const orderSlice = createSlice({
         })
         .addCase(fetchOrderDetails.rejected, (state, action)=> {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error.message;
         })
 },
 });

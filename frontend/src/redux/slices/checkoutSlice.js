@@ -10,13 +10,18 @@ async (checkoutdata, { rejectWithValue })=> {
         checkoutdata,
         {
             headers:{
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                Authorization: localStorage.getItem("userToken")
+                ? `Bearer ${localStorage.getItem("userToken")}`
+                : undefined,
             },
         }
     );
     return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
+
     }
 }
 );
@@ -41,7 +46,7 @@ const checkoutSlice = createSlice({
         })
         .addCase(createCheckout.rejected, (state, action)=>{
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || "Checkout failed";
         });
     },
 });

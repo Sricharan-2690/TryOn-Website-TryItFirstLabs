@@ -18,12 +18,12 @@ router.get("/", protect, admin, async (req, res) => {
     }
 });
 
-// @route PUT /api/admin/orders/:id
+// @route PUT /api/admin/orders/:id 
 // @desc Update order status
 // @access Private/Admin
 router.put("/:id", protect, admin, async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id);
+        const order = await Order.findById(req.params.id).populate ("user", "name");
         if (order) {
             order.status = req.body.status || order.status;
             order.isDelivered =req.body.status === "Delivered" ? true :order.isDelivered;

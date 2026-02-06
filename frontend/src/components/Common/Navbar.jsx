@@ -5,11 +5,16 @@ import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
 import React, { useState } from "react";
 import { IoMdClose } from "react-icons/io";
-
+import { useSelector } from "react-redux";
 const Navbar = () => {
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+
+    const { cart } = useSelector((state) => state.cart);
+    const cartItemCount = cart?.products?.reduce((total, product) => total + product.quantity,0) || 0;
+
+    const {user} = useSelector((state)=> state.auth)
 
     const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
@@ -30,25 +35,30 @@ return (
         
         {/* Center Navigation Links */}
         <div className="hidden md:flex space-x-6">
-            <Link to="/collections/all" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Men</Link>
-            <Link to="#" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Women</Link>
-            <Link to="#" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Topwear</Link>
-            <Link to="#" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Bottomwear</Link>
+            <Link to="/collections/all?gender=Men" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Men</Link>
+            <Link to="/collections/all?gender=Women" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Women</Link>
+            <Link to="/collections/all?category=Top Wear" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Topwear</Link>
+            <Link to="/collections/all?category=Bottom Wear" className="text-gray-700 hover:text-black text-sm font-medium uppercase">Bottomwear</Link>
         </div>
         
         {/* Right Icons */}
         <div className="flex items-center space-x-4">
-            <Link
-                to="/admin"
-                className="block bg-black px-2 rounded text-sm text-white">
-                Admin
-            </Link>
+            {user && user.role ==="admin" && (
+                <Link
+                    to="/admin"
+                    className="block bg-black px-2 rounded text-sm text-white">
+                    Admin
+                </Link>
+            )
+            }
             <Link to="/profile" className="text-gray-700 hover:text-black">
                 <FiUser className="h-5 w-5" />
             </Link>
             <button onClick={toggleDrawer} className="relative text-gray-700 hover:text-black">
                 <FiShoppingCart className="h-5 w-5 text-gray-700" />
-               <span className="absolute -top-1 bg-black text-white text-xs rounded-full px-2 py-0.5 ">5</span>
+                {cartItemCount > 0 && (
+                    <span className="absolute -top-1 bg-black text-white text-xs rounded-full px-2 py-0.5 ">{cartItemCount}</span>
+                )}
             </button>
           
 
@@ -78,10 +88,10 @@ return (
             <div className="p-4">
                 <h2 className="text-xl font-bold mb-4">Menu</h2>
                 <nav className="space-y-4 ">
-                    <Link onClick={toggleNavDrawer} to="#" className="block text-gray-700 hover:text-black">Men</Link>
-                    <Link  onClick={toggleNavDrawer} to="#" className="block  text-gray-700 hover:text-black">Women</Link>
-                    <Link  onClick={toggleNavDrawer} to="#" className="block  text-gray-700 hover:text-black">Topwear</Link>
-                    <Link  onClick={toggleNavDrawer} to="#" className="block  text-gray-700 hover:text-black">Bottomwear</Link>
+                    <Link onClick={toggleNavDrawer} to="/collections/all?gender=Men" className="block text-gray-700 hover:text-black">Men</Link>
+                    <Link  onClick={toggleNavDrawer} to="/collections/all?gender=Women" className="block  text-gray-700 hover:text-black">Women</Link>
+                    <Link  onClick={toggleNavDrawer} to="/collections/all?category=Top Wear" className="block  text-gray-700 hover:text-black">Topwear</Link>
+                    <Link  onClick={toggleNavDrawer} to="/collections/all?category=Bottom Wear" className="block  text-gray-700 hover:text-black">Bottomwear</Link>
                 </nav>
             </div>
 

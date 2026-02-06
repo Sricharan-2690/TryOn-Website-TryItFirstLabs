@@ -46,13 +46,22 @@ router.post("/register", async (req, res) => {
 // @access Public
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
-    try {
-        // Find the user by email
-        let user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: "Invalid Credentials" });
+   try {
+    let user = await User.findOne({ email });
+    console.log("USER FOUND:", user);
 
-        const isMatch = await user.matchPassword (password);
-        if (!isMatch) return res.status(400).json({ message: "Invalid Credentials" });
+    if (!user) {
+      console.log("❌ User not found");
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    const isMatch = await user.matchPassword(password);
+    console.log("PASSWORD MATCH:", isMatch);
+
+    if (!isMatch) {
+      console.log("❌ Password mismatch");
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
 
         // Create JWT Payload
         const payload = { user: { id: user._id, role: user.role } };

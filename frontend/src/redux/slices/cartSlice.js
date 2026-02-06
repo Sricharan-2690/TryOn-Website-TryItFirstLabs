@@ -4,7 +4,11 @@ import axios from "axios";
 // Helper function to load cart from localStorage
 const loadCartFromStorage = () => {
     const storedCart = localStorage.getItem("cart");
-    return storedCart ? JSON.parse(storedCart) : { products: [] };
+    try{
+        return storedCart ? JSON.parse(storedCart) : { products: [] };
+    }catch {
+        return { products: [] };
+    }
 };
 
 // Helper function to save cart to localStorage
@@ -25,7 +29,9 @@ async ({ userId, guestId}, { rejectWithValue }) => {
         return response.data;
     } catch (error) {
         console.error(error);
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -47,7 +53,9 @@ guestId, userId}, {rejectWithValue}) => {
                 );
                 return response.data;
             } catch (error) {
-                return rejectWithValue(error.response.data);
+                return rejectWithValue(
+                    error.response?.data || { message: "Something went wrong" }
+                );
             }
         }
 );
@@ -69,7 +77,9 @@ export const updateCartItemQuantity = createAsyncThunk("cart/updateCartItemQuant
         );
         return response.data
     } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
     }
 );
@@ -85,7 +95,9 @@ async ({ productId, guestId, userId, size, color}, { rejectWithValue }) => {
         });
         return response.data
     }catch (error) {
-        return rejectWithValue(error.response.data);
+       return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" }
+       );
     }
 }
 );
@@ -105,7 +117,9 @@ async ({ guestId, user }, { rejectWithValue }) => {
         );
         return response.data;
     }catch (error) {
-        return rejectWithValue(error.response.data);
+       return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );

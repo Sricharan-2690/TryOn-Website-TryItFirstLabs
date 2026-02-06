@@ -15,7 +15,10 @@ async (_, { rejectWithValue }) => {
         );
         return response.data
     }catch (error) {
-        return rejectWithValue(error.response.data)
+       return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
+
     }
 }
 );
@@ -34,7 +37,9 @@ async ({id,status}, { rejectWithValue }) => {
         );
         return response.data
     }catch (error) {
-        return rejectWithValue(error.response.data)
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -53,7 +58,9 @@ async (id, { rejectWithValue }) => {
         );
         return id;
     }catch (error) {
-        return rejectWithValue(error.response.data)
+        return rejectWithValue(
+            error.response?.data || { message: "Something went wrong" }
+        );
     }
 }
 );
@@ -80,12 +87,12 @@ const adminOrderSlice = createSlice({
                 state.orders = action.payload;
                 state.totalOrders = action.payload.length;
                 // calculate total sales
-                const totalSales = action.payload.reduce((acc, order)=> {return acc + order.totalPrice;}, 0);
+                const totalSales = action.payload.reduce((acc, order)=> {return acc + (order.totalPrice || 0);}, 0);
                 state.totalSales = totalSales;
             })
             .addCase(fetchAllOrders.rejected, (state, action)=> {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error.message;
             })
             //Update Order Status
             .addCase (updateOrderStatus.fulfilled, (state, action) =>{
@@ -97,7 +104,23 @@ const adminOrderSlice = createSlice({
             })
             //Delete Order
             .addCase (deleteOrder.fulfilled, (state, action) =>{
-                state.orders = state.orders.filter((order) => order._id !== action.payload);
+                // find deleted order first
+                const deletedOrder = state.orders.find(
+                    (order) => order._id === action.payload
+                );
+
+                // remove order
+                state.orders = state.orders.filter(
+                    (order) => order._id !== action.payload
+                );
+
+                // update totalOrders
+                state.totalOrders = state.orders.length;
+
+                // update totalSales
+                if (deletedOrder) {
+                    state.totalSales -= (deletedOrder.totalPrice || 0);
+                }
             });
     },
 });

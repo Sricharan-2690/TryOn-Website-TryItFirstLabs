@@ -16,24 +16,31 @@ export const fetchProductsByFilters = createAsyncThunk("products/fetchByFilters"
         material,
         brand,
         limit,
-    })=>{
-        const query = new URLSearchParams();
-        if (collection) query.append("collection", collection);
-        if (size) query.append("size", size);
-        if (color) query.append("color", color);
-        if (gender) query.append("gender", gender);
-        if (minPrice) query.append("minPrice", minPrice);
-        if (maxPrice) query.append("maxPrice", maxPrice);
-        if (sortBy) query.append("sortBy", sortBy);
-        if (search) query.append("search", search);
-        if (category) query.append("category", category);
-        if (material) query.append("material", material);
-        if (brand) query.append("brand", brand);
-        if (limit) query.append("limit", limit);
+    }, { rejectWithValue })=>{
+        try{
+            const query = new URLSearchParams();
+            if (collection) query.append("collection", collection);
+            if (size) query.append("size", size);
+            if (color) query.append("color", color);
+            if (gender) query.append("gender", gender);
+            if (minPrice !== undefined && minPrice !== null)
+                query.append("minPrice", minPrice);
+            if (maxPrice !== undefined && maxPrice !== null)
+                query.append("maxPrice", maxPrice);
+            if (sortBy) query.append("sortBy", sortBy);
+            if (search) query.append("search", search);
+            if (category) query.append("category", category);
+            if (material) query.append("material", material);
+            if (brand) query.append("brand", brand);
+            if (limit) query.append("limit", limit);
 
-        const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/products?${query.toString()}`);
-        return response.data;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products?${query.toString()}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+              error.response?.data?.message || "Failed to fetch products"
+            );
+        }
     }
 );
 
@@ -124,7 +131,7 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProductsByFilters.rejected, (state, action) => {
                 state.loading = false;
-                state.error=action.error.message;
+                state.error = action.payload || action.error.message;
             })
 
             // handle fetching single product details
@@ -138,7 +145,7 @@ const productsSlice = createSlice({
             })
             .addCase(fetchProductDetails.rejected, (state, action) => {
                 state.loading = false;
-                state.error=action.error.message;
+                state.error = action.payload || action.error.message;
             })
 
             // handle update product with filter
@@ -151,12 +158,15 @@ const productsSlice = createSlice({
                 const updatedProduct=action.payload
                 const index = state.products.findIndex((product) => product._id === updatedProduct._id);
                 if (index !== -1) {
-                state.products[index] = updatedProduct;
+                    state.products[index] = updatedProduct;
+                }
+                if (state.selectedProduct?._id === updatedProduct._id) {
+                    state.selectedProduct = updatedProduct;
                 }
             })
             .addCase(updateProduct.rejected, (state, action) => {
                 state.loading = false;
-                state.error=action.error.message;
+                state.error = action.payload || action.error.message;
             })
 
             // handle similar products
@@ -170,7 +180,7 @@ const productsSlice = createSlice({
             })
             .addCase(fetchSimilarProducts.rejected, (state, action) => {
                 state.loading = false;
-                state.error=action.error.message;
+                state.error = action.payload || action.error.message;
             })
         },
 });

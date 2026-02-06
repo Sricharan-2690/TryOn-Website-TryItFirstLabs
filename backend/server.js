@@ -19,6 +19,14 @@ connectDB()
 
 app.use(express.json());
 app.use(cors());
+// const allowedOrigin = "http://localhost:5174"; // your frontend URL
+
+// app.use(
+//   cors({
+//     origin: allowedOrigin, // only this frontend can access
+//     credentials: true,     // needed if using cookies or auth headers
+//   })
+// );
 
 const PORT = process.env.PORT || 3000;
 
