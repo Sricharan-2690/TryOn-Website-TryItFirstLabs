@@ -18,6 +18,7 @@ const ProductDetails = ({productId}) => {
     const [selectedColor, setSelectedColor] = useState("");
     const [quantity, setQuantity] = useState(1);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isButtonDisabled2, setIsButtonDisabled2] = useState(false);
 
     const [openTryOn, setOpenTryOn] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -196,9 +197,9 @@ return (
                             </button>
                             <button 
                                 onClick={handleTryOn}
-                                disabled={isButtonDisabled}
-                                className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${isButtonDisabled?" cursor-not-allowed opacity-50":"hover:bg-gray-900"}`}>
-                            {isButtonDisabled? "Loading..":" TRY ON"}
+                                disabled={isButtonDisabled2}
+                                className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${isButtonDisabled2?" cursor-not-allowed opacity-50":"hover:bg-gray-900"}`}>
+                            {isButtonDisabled2? "Loading..":" TRY ON"}
                             </button>
                             <div className="mt-10 text-gray-700">
                                 <h3 className="text-xl font-bold mb-4">Characteristics:</h3>
